@@ -19,9 +19,17 @@ const sessions = [
     name: "Session 2",
     start_time: "11:30:00",
     end_time: "12:30:00",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    capacity: 20,
     speaker: {
       first_name: "John",
       last_name: "Doe",
+      job_title: "Software Engineer",
+      company: "Test Company LLC",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      profile_picture:
+        "https://xsgames.co/randomusers/avatar.php?g=pixel&key=1",
     },
   },
   {
