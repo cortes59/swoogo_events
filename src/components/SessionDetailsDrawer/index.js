@@ -1,7 +1,7 @@
-import { Collapse, Drawer, Image, Typography } from "antd";
+import { Collapse, Drawer, Spin, Typography } from "antd";
 import Avatar from "antd/es/avatar/avatar";
 
-export function SessionDetailsDrawer({ open, onClose, session }) {
+export function SessionDetailsDrawer({ open, onClose, session, loading }) {
   return (
     <Drawer
       title={session?.name || ""}
@@ -9,7 +9,9 @@ export function SessionDetailsDrawer({ open, onClose, session }) {
       onClose={onClose}
       open={open}
     >
-      {session ? (
+      {loading ? <Spin size="large" /> : null}
+
+      {!loading && session ? (
         <>
           <Typography.Paragraph>
             {session?.start_time} - {session?.end_time}
@@ -22,34 +24,36 @@ export function SessionDetailsDrawer({ open, onClose, session }) {
           </Typography.Paragraph>
           <div>
             <Typography.Paragraph>Presented By</Typography.Paragraph>
-            <Collapse defaultActiveKey={["1"]} ghost>
-              <Collapse.Panel
-                header={`${session.speaker.first_name} ${session.speaker.last_name}`}
-                key="1"
-              >
-                {/* <p>{text}</p> */}
-                {session.speaker.profile_picture ? (
-                  <Avatar size={64} src={session.speaker.profile_picture} />
-                ) : null}
-                {session.speaker.job ? (
-                  <Typography.Paragraph>
-                    {session.speaker.job}
-                  </Typography.Paragraph>
-                ) : null}
-                {session.speaker.company ? (
-                  <Typography.Paragraph>
-                    {session.speaker.company}
-                  </Typography.Paragraph>
-                ) : null}
-                {session.speaker.bio ? (
-                  <>
-                    <Typography.Paragraph>Bio</Typography.Paragraph>
+            <Collapse  ghost>
+              {session.speakers.map((speaker, index) => (
+                <Collapse.Panel
+                  header={`${speaker.first_name} ${speaker.last_name}`}
+                  key={`${index + 1}`}
+                >
+                  {/* <p>{text}</p> */}
+                  {speaker.profile_picture ? (
+                    <Avatar size={64} src={speaker.profile_picture} />
+                  ) : null}
+                  {speaker.job ? (
                     <Typography.Paragraph>
-                      {session.speaker.bio}
+                      {speaker.job}
                     </Typography.Paragraph>
-                  </>
-                ) : null}
-              </Collapse.Panel>
+                  ) : null}
+                  {speaker.company ? (
+                    <Typography.Paragraph>
+                      {speaker.company}
+                    </Typography.Paragraph>
+                  ) : null}
+                  {speaker.bio ? (
+                    <>
+                      <Typography.Paragraph>Bio</Typography.Paragraph>
+                      <Typography.Paragraph>
+                        {speaker.bio}
+                      </Typography.Paragraph>
+                    </>
+                  ) : null}
+                </Collapse.Panel>
+              ))}
             </Collapse>
           </div>
         </>
