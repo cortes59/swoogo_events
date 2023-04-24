@@ -1,3 +1,23 @@
 .event {
-    
+  width: 80%;
+  margin: 0 auto;
+}
+
+.event-header {
+  text-align: center;
+}
+
+.event-header .event-description {
+  width: 80%;
+  margin: 0 auto;
+  text-align: justify;
+}
+
+.event-header .event-date {
+  display: flex;
+  justify-content: flex-end;
+  text-transform: capitalize;
+}
+.event-header .event-date > * {
+  margin-left: 10px;
 }

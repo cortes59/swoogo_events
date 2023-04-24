@@ -2,6 +2,7 @@ import { Spin, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import Loader from "../../components/Loader";
 import { SessionDetailsDrawer } from "../../components/SessionDetailsDrawer";
 import SessionsList from "../../components/SessionsList";
 import { fetchEventById } from "../../features/event/eventSlice";
@@ -11,65 +12,22 @@ import {
 } from "../../features/session/sessionSlice";
 import "./style.css";
 
-// const event = {
-//   name: "Test Event",
-//   description:
-//     "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-//   start_date: "2016-02-10",
-//   timezone: "Europe/London",
-//   status: "live",
-// };
 
-// const sessions = [
-//   {
-//     id: 1,
-//     name: "Session 2",
-//     start_time: "11:30:00",
-//     end_time: "12:30:00",
-//     description:
-//       "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-//     capacity: 20,
-//     speaker: {
-//       first_name: "John",
-//       last_name: "Doe",
-//       job_title: "Software Engineer",
-//       company: "Test Company LLC",
-//       bio: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-//       profile_picture:
-//         "https://xsgames.co/randomusers/avatar.php?g=pixel&key=1",
-//     },
-//   },
-//   {
-//     id: 2,
-//     name: "Session 1",
-//     start_time: "12:30:00",
-//     end_time: "01:30:00",
-//     speaker: {
-//       first_name: "Jane",
-//       last_name: "Smith",
-//     },
-//   },
-//   {
-//     id: 3,
-//     name: "Session 3",
-//     start_time: "12:30:00",
-//     end_time: "01:30:00",
-//     speaker: {
-//       first_name: "Jackie",
-//       last_name: "Smith",
-//     },
-//   },
-// ];
 
 export default function Event() {
   const [isSessionDetailsOpen, setIsSessionDetailsOpen] = useState(null);
-  const [sessionsPage, setSessionsPage] = useState(1);
+  const [sessionsPagination, setSessionsPagination] = useState({
+    page: 1,
+    perPage: 10,
+  });
+
   const { event, loading: eventLoading } = useSelector((state) => state.event);
   const {
     sessions,
     loading: sessionsLoading,
     session,
     sessionByIdLoading,
+    sessionsTotalCount,
   } = useSelector((state) => state.session);
 
   const dispatch = useDispatch();
@@ -88,33 +46,46 @@ export default function Event() {
       dispatch(
         fetchEventSessions({
           eventId: params.id,
-          page: sessionsPage,
-          perPage: 20,
+          page: sessionsPagination.page,
+          perPage: sessionsPagination.perPage,
         })
       );
     }
-  }, [params?.id, sessionsPage, dispatch]);
+  }, [params?.id, sessionsPagination, dispatch]);
 
   return (
     <div className="event">
-      {eventLoading || !event ? (
-        <Spin size="large" />
-      ) : (
-        <div className="event-header">
-          <Typography.Title level={1}>{event.name}</Typography.Title>
-          <div dangerouslySetInnerHTML={{ __html: event.description }} />
-          <Typography.Paragraph>
-            {event.start_date} - {event.timezone}
-          </Typography.Paragraph>
-          <Typography.Paragraph>{event.status}</Typography.Paragraph>
-        </div>
-      )}
+      <div className="event-header">
+        {eventLoading || !event ? (
+          <Loader h="20vh" />
+        ) : (
+          <>
+            <Typography.Title level={1}>{event.name}</Typography.Title>
+            <div
+              className="event-description"
+              dangerouslySetInnerHTML={{ __html: event.description }}
+            />
+            <div className="event-date">
+              <Typography.Paragraph>{event.status}</Typography.Paragraph>
+              <Typography.Paragraph>-</Typography.Paragraph>
+              <Typography.Paragraph>
+                {event.start_date} - {event.timezone}
+              </Typography.Paragraph>
+            </div>
+          </>
+        )}
+      </div>
 
-      {sessionsLoading ? (
-        <Spin size="large" />
-      ) : (
-        <SessionsList sessions={sessions} onSessionClick={onSessionClick} />
-      )}
+      <SessionsList
+        loading={sessionsLoading}
+        sessions={sessions}
+        onSessionClick={onSessionClick}
+        pagination={{
+          total: sessionsTotalCount,
+          current: sessionsPagination.page,
+          onChange: (page, perPage) => setSessionsPagination({ page, perPage }),
+        }}
+      />
 
       <SessionDetailsDrawer
         session={session}

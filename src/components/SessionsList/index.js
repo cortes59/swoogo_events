@@ -1,28 +1,13 @@
-import { Col, Grid, Row, Select, Table, Typography } from "antd";
-import { useMemo, useState } from "react";
+import { Table, Typography } from "antd";
+import { useMemo } from "react";
 import { sortBy } from "../../app/utils/sorter";
 
-const orderOptions = [
-  {
-    label: "Start Time",
-    value: "start_time",
-    type: "time",
-  },
-  {
-    label: "Name",
-    value: "name",
-    type: "string",
-  },
-  {
-    label: "Speaker",
-    value: "speaker.last_name",
-    type: "string",
-  },
-];
-
-export default function SessionsList({ sessions, onSessionClick }) {
-  const [orderBy, setOrderBy] = useState(orderOptions[0]);
-
+export default function SessionsList({
+  sessions,
+  onSessionClick,
+  loading,
+  pagination,
+}) {
   const columns = [
     {
       title: "Time",
@@ -61,34 +46,19 @@ export default function SessionsList({ sessions, onSessionClick }) {
     onClick: () => onSessionClick(session),
   });
 
-  const onOrderChange = (value) =>
-    setOrderBy(orderOptions.find((option) => option.value === value));
-
   const sortedSessions = useMemo(() => {
-    return sessions.slice().sort(sortBy(orderBy.value, orderBy.type));
-  }, [sessions, orderBy]);
-  console.log({ sortedSessions });
+    return sessions.slice().sort(sortBy("start_time", "time"));
+  }, [sessions]);
 
   return (
-    <div className="sessions-list">
-      <div className="sorter">
-        Order By:
-        <Select
-          value={orderBy.value}
-          style={{ width: 120 }}
-          options={orderOptions}
-          onChange={onOrderChange}
-        />
-      </div>
-
-      <div className="sessions">
-        <Table
-          rowKey={"id"}
-          dataSource={sortedSessions}
-          columns={columns}
-          onRow={onRow}
-        />
-      </div>
-    </div>
+    <Table
+      loading={loading}
+      pagination={pagination}
+      className="sessions-table"
+      rowKey={"id"}
+      dataSource={sortedSessions}
+      columns={columns}
+      onRow={onRow}
+    />
   );
 }
